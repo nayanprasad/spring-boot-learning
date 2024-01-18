@@ -1,10 +1,9 @@
 package com.example.springboot.student;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(path = "/api/v1/students")
@@ -16,9 +15,13 @@ public class StudentController {
     }
 
 
-    @GetMapping("/student")
+    @GetMapping("/all")
     public List<Student> getStudents() {
         return studentService.student();
     }
 
+    @PostMapping("/new")
+    public Map<String, Object> addNewStudent(@RequestBody Student student) {
+        return studentService.addNewStudent(student);
+    }
 }

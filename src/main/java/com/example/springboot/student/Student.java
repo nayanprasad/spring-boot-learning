@@ -47,6 +47,14 @@ public class Student {
         return email;
     }
 
+    public String toString() {
+        return "Student{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", email=" + email +
+                '}';
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
