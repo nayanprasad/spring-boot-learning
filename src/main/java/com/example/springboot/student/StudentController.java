@@ -9,12 +9,16 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/api/v1/students")
 public class StudentController {
-    @GetMapping("/student")
-    public List<Student> student() {
-        return  List.of(new Student(
-                1L,
-                "hades",
-                "hades@gmail.com"
-        ));
+
+    private final StudentService studentService;
+    public StudentController(StudentService studentService) {
+        this.studentService = studentService;
     }
+
+
+    @GetMapping("/student")
+    public List<Student> getStudents() {
+        return studentService.student();
+    }
+
 }
