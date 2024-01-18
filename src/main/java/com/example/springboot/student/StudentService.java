@@ -35,7 +35,7 @@ public class StudentService {
 
         studentRepository.save(student);
 
-       return  ResponseEntity.status(200).body(Map.of(
+       return  ResponseEntity.status(201).body(Map.of(
                 "success", true,
                 "message", "student added",
                 "student", student
