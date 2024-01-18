@@ -36,6 +36,4 @@ public class StudentController {
         return studentService.updateStudent(id, student);
     }
 
-
-
 }
