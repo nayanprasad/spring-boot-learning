@@ -1,6 +1,7 @@
 package com.example.springboot.student;
 
 import org.springframework.data.repository.query.Param;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,22 +18,22 @@ public class StudentController {
 
 
     @GetMapping("/all")
-    public List<Student> getStudents() {
+    public ResponseEntity<Map<String, Object>> getStudents() {
         return studentService.student();
     }
 
     @PostMapping("/new")
-    public Map<String, Object> addNewStudent(@RequestBody Student student) {
+    public ResponseEntity<Map<String, Object>> addNewStudent(@RequestBody Student student) {
         return studentService.addNewStudent(student);
     }
 
     @DeleteMapping("/delete/{studentId}")
-    public Map<String, Object> deleteStudent(@PathVariable("studentId") Long id) {
+    public ResponseEntity<Map<String, Object>> deleteStudent(@PathVariable("studentId") Long id) {
         return studentService.deleteStudent(id);
     }
 
     @PutMapping("/update/{studentId}")
-    public Map<String, Object> updateStudent(@PathVariable("studentId") Long id, @RequestBody Student student) {
+    public ResponseEntity<Map<String, Object>> updateStudent(@PathVariable("studentId") Long id, @RequestBody Student student) {
         return studentService.updateStudent(id, student);
     }
 

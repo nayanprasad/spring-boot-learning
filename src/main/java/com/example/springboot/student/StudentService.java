@@ -1,6 +1,7 @@
 package com.example.springboot.student;
 
 import jakarta.websocket.OnClose;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,11 +20,17 @@ public class StudentService {
         this.studentRepository = studentRepository;
     }
 
-    public List<Student> student() {
-        return studentRepository.findAll();
+    public ResponseEntity<Map<String, Object>> student() {
+        List<Student> students = studentRepository.findAll();
+
+        return ResponseEntity.status(200).body(Map.of(
+                "success", true,
+                "message", "students fetched",
+                "students", students
+        ));
     }
 
-    public Map<String, Object> addNewStudent(Student student) {
+    public ResponseEntity<Map<String, Object>> addNewStudent(Student student) {
 //        System.out.println(student.toString());
         Optional<Student> studentOptional = studentRepository.findStudentByEmail(student.getEmail());
 
@@ -32,29 +39,27 @@ public class StudentService {
 
         studentRepository.save(student);
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("success", true);
-        response.put("message", "student added");
-        response.put("student", student);
-
-        return response;
+       return  ResponseEntity.status(200).body(Map.of(
+                "success", true,
+                "message", "student added",
+                "student", student
+        ));
 
     }
 
-    public Map<String, Object> deleteStudent(Long id) {
+    public ResponseEntity<Map<String, Object>> deleteStudent(Long id) {
         boolean isPresent = studentRepository.existsById(id);
         if (!isPresent)
             throw new IllegalStateException("the student with id: " + id + " doesn't exist");
         studentRepository.deleteById(id);
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("success", true);
-        response.put("message", "student deleted");
-
-        return response;
+        return ResponseEntity.status(200).body(Map.of(
+                "successs", true,
+                "message", "student deleted with id: " + id
+        ));
     }
 
-    public Map<String, Object> updateStudent(Long id, Student student) {
+    public ResponseEntity<Map<String, Object>> updateStudent(Long id, Student student) {
         boolean isExists = studentRepository.existsById(id);
         if (!isExists)
             throw new IllegalStateException("the student with id: " + id + " doesn't exist");
@@ -70,11 +75,10 @@ public class StudentService {
 
         studentRepository.save(StudentToUpdate);
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("success", true);
-        response.put("message", "student updated");
-        response.put("student", StudentToUpdate);
-
-        return response;
+        return ResponseEntity.status(200).body(Map.of(
+                "success", true,
+                "message", "student updated",
+                "student", StudentToUpdate
+        ));
     }
 }
