@@ -1,6 +1,5 @@
 package com.example.springboot.auth;
 
-
 import com.example.springboot.user.User;
 import com.example.springboot.user.UserRepository;
 import com.example.springboot.user.config.JwtService;
@@ -8,9 +7,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
-@RequiredArgsConstructor
-// generates a constructor with 1 parameter for each field that requires special handling  (else the constructor is empty and the userRepository is null which shows error)
+@RequiredArgsConstructor // generates a constructor with 1 parameter for each field that requires special handling  (else the constructor is empty and the userRepository is null which shows error)
 public class AuthenticationService {
 
     private final UserRepository userRepository;
@@ -18,6 +18,11 @@ public class AuthenticationService {
     private final JwtService jwtService;
 
     public AuthenticationResponse register(RegisterRequest request) {
+
+        boolean isPresent = userRepository.findByEmail(request.getEmail()).isPresent();
+        if (isPresent)
+            throw new IllegalStateException("email already taken");
+
         var user = User.builder()
                 .name(request.getName())
                 .email(request.getEmail())
