@@ -26,7 +26,7 @@ public class SecurityConfiguration {
                 .cors(withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/**").permitAll() // Allow access to "/api/v1/auth" without authentication
+                        .requestMatchers("/api/v1/auth/**", "/").permitAll() // Allow access to "/api/v1/auth" without authentication
                         .anyRequest().authenticated()) // Require authentication for any other request
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)

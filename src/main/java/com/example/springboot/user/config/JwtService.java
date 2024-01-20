@@ -1,17 +1,21 @@
 package com.example.springboot.user.config;
 
 
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.security.Key;
 import java.util.Date;
 import java.util.function.Function;
 
 @Service
 public class JwtService {
 
-    private final String jwtSecrete = "E98F44FDD11C3B94919D6F6326442E98F44FDD11C3B94919D6F6326442";
+    private final static String SECRET_KEY = "C609D6E3F58BDE1AA94A6B7BC7C49FAF9E27DC83B770503C3A74C4D6C6231EB2";
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -22,6 +26,7 @@ public class JwtService {
     }
 
     public String createToken(String subject) {
+        System.out.println("JwtService: createToken: subject: " + subject);
         return Jwts.builder()
                 .setSubject(subject)
                 .signWith(io.jsonwebtoken.SignatureAlgorithm.HS256, jwtSecrete)
@@ -37,12 +42,14 @@ public class JwtService {
 
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(jwtSecrete).parseClaimsJws(token).getBody();
+        System.out.println("JwtService: extractClaim: token: " + token);
+
+        return Jwts.parser().setSigningKey(getSigningKey()).parseClaimsJws(token).getBody();
     }
 
-    public Boolean isTokenValid(String token, String _username) {
-        final String username = extractUsername(token);
-        return (username.equals(_username.toString()) && !isTokenExpired(token));
+    public Boolean validateToken(String token, UserDetails userDetails) {
+        final String tokenUsername = extractUsername(token);
+        return (tokenUsername.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
     public Boolean isTokenExpired(String token) {
@@ -51,6 +58,11 @@ public class JwtService {
 
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
+    }
+
+    private Key getSigningKey() {
+        byte[] keyBytes= Decoders.BASE64.decode(jwtSecrete);
+        return Keys.hmacShaKeyFor(jwtSecrete.getBytes());
     }
 
 }

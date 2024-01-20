@@ -27,15 +27,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {   // OncePer
     protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
             throws ServletException, IOException {
 
-//        if (request.getServletPath().contains("/api/v1/auth")) {
-//            System.out.println("JwtAuthenticationFilter: request.getServletPath().contains(\"/api/v1/auth\")");
-//            filterChain.doFilter(request, response);
-//            return;
-//        }
+        if (request.getServletPath().contains("/api/v1/auth")) {
+            System.out.println("JwtAuthenticationFilter: request.getServletPath().contains(\"/api/v1/auth\")");
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         final String authHeader = request.getHeader("Authorization");
         final String token;
         final String userEmail;
+
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
@@ -44,15 +45,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {   // OncePer
 
         token = authHeader.substring(7);
         userEmail = jwtService.extractUsername(token);
+        System.out.println("JwtAuthenticationFilter: userEmail: " + userEmail);
         if (userEmail == null) {
             filterChain.doFilter(request, response);
             return;
         }
 
-//        request.setAttribute("id", id); // set id to request
 
         UserDetails user = userDetailsService.loadUserByUsername(userEmail);
-        if (jwtService.isTokenValid(token, user.getUsername())) {
+        if (jwtService.validateToken(token, user)) {
             UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                     user,
                     null,

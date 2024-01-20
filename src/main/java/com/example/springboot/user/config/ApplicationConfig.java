@@ -1,5 +1,6 @@
 package com.example.springboot.user.config;
 
+import com.example.springboot.user.User;
 import com.example.springboot.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +15,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Optional;
+
 
 @Configuration
 @RequiredArgsConstructor
@@ -26,8 +29,11 @@ public class ApplicationConfig {
         return new UserDetailsService() {
             @Override
             public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-                return (UserDetails) userRepository.findByEmail(username)  // findByEmail() returns Optional<User> which is converted to UserDetails
-                        .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                Optional<User> user = userRepository.findByEmail(username);
+                if (user.isPresent()) {
+                    return new AuthenticatedUser(user.get().getEmail(), user.get().getPassword(), user.get().getAuthorities());
+                }
+                throw new UsernameNotFoundException("user name not found");
             }
         };
     }
