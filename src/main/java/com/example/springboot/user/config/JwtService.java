@@ -1,6 +1,7 @@
 package com.example.springboot.user.config;
 
 
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -29,7 +30,7 @@ public class JwtService {
         System.out.println("JwtService: createToken: subject: " + subject);
         return Jwts.builder()
                 .setSubject(subject)
-                .signWith(io.jsonwebtoken.SignatureAlgorithm.HS256, jwtSecrete)
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7)) // 7 days
                 .compact();
@@ -61,8 +62,8 @@ public class JwtService {
     }
 
     private Key getSigningKey() {
-        byte[] keyBytes= Decoders.BASE64.decode(jwtSecrete);
-        return Keys.hmacShaKeyFor(jwtSecrete.getBytes());
+        byte[] key = Decoders.BASE64.decode(SECRET_KEY);
+        return Keys.hmacShaKeyFor(key);
     }
 
 }
